@@ -1,4 +1,4 @@
-# elmclient
+# elm
 
 ## Project setup
 ```
