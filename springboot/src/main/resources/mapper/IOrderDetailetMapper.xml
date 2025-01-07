@@ -1,0 +1,23 @@
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="ynu.elm.mapper.IOrderDetailetMapper">
+
+    <insert id="saveOrderDetailetBatch" parameterType="ynu.elm.entity.OrderDetailet">
+        INSERT INTO orderDetailet (orderId,foodId,quantity) VALUES
+            (#{orderId},#{foodId},#{quantity})
+    </insert>
+
+    <resultMap type="ynu.elm.entity.OrderDetailet" id="orderDetailetResultMap">
+        <id column="odId" property="odId"/>
+        <result column="orderId" property="orderId"/>
+        <result column="foodId" property="foodId"/>
+        <result column="quantity" property="quantity"/>
+        <association property="food" javaType="ynu.elm.entity.Food"
+                     select="ynu.elm.mapper.IFoodMapper.getFoodById" column="foodId"/>
+    </resultMap>
+
+    <select id="listOrderDetailetByOrderId" parameterType="Integer"
+            resultMap="orderDetailetResultMap">
+        select * from orderDetailet where orderId=#{orderId}
+    </select>
+</mapper>

@@ -1,0 +1,76 @@
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="ynu.elm.mapper.ICartMapper">
+
+    <!-- 查询用户所有购物车信息，或根据用户编号和商家编号查询购物车信息 -->
+    <!-- 定义Cart的resultMap -->
+    <resultMap id="CartResultMap" type="ynu.elm.entity.Cart">
+        <id column="cartId" property="cartId"/>
+        <result column="foodId" property="foodId"/>
+        <result column="businessId" property="businessId"/>
+        <result column="userId" property="userId"/>
+        <result column="quantity" property="quantity"/>
+
+        <!-- 关联查询Food信息 -->
+        <association property="food" javaType="ynu.elm.entity.Food"
+                     select="ynu.elm.mapper.IFoodMapper.getFoodById" column="foodId"/>
+
+        <!-- 关联查询Business信息 -->
+        <association property="business" javaType="ynu.elm.entity.Business"
+                     select="ynu.elm.mapper.IBusinessMapper.queryBusinessById" column="businessId"/>
+    </resultMap>
+
+    <!-- 根据用户编号和可选的商家编号查询购物车信息 -->
+    <select id="listCartByUserIdAndOptionalBusinessId" resultMap="CartResultMap">
+        SELECT * FROM cart
+        WHERE userId = #{userId}
+        <if test="businessId != null">
+            AND businessId = #{businessId}
+        </if>
+        ORDER BY cartId
+    </select>
+
+    <delete id="removeCart" parameterType="ynu.elm.entity.Cart">
+        delete from cart
+        <where>
+            userId=#{userId} and businessId=#{businessId}
+            <if test="foodId!=null and foodId!=''">
+                and foodId=#{foodId}
+            </if>
+        </where>
+    </delete>
+
+    <delete id="deleteByUserIdAndBusinessId" parameterType="map">
+        DELETE FROM cart
+        WHERE userId = #{userId}
+          AND businessId = #{businessId}
+    </delete>
+
+    <resultMap type="ynu.elm.entity.Cart" id="cartResultMap">
+        <id column="cartId" property="cartId"/>
+        <result column="foodId" property="foodId"/>
+        <result column="businessId" property="businessId"/>
+        <result column="userId" property="userId"/>
+        <result column="quantity" property="quantity"/>
+        <association property="food" javaType="ynu.elm.entity.Food"
+                     select="ynu.elm.mapper.IFoodMapper.getFoodById" column="foodId"/>
+        <association property="business" javaType="ynu.elm.entity.Business"
+                     select="ynu.elm.mapper.IBusinessMapper.getBusinessById"
+                     column="businessId"/>
+
+    </resultMap>
+
+    <select id="listCart" parameterType="ynu.elm.entity.Cart" resultMap="cartResultMap">
+        select * from cart
+        <where>
+            userId=#{userId}
+            <if test="businessId!=null and businessId!=''">
+                and businessId=#{businessId}
+            </if>
+        </where>
+        order by cartId
+    </select>
+
+
+
+</mapper>
